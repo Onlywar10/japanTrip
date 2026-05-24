@@ -27,11 +27,8 @@ export async function POST(request: Request): Promise<NextResponse> {
         return {
           allowedContentTypes: ALLOWED_IMAGE_TYPES,
           maximumSizeInBytes: MAX_UPLOAD_BYTES,
-          addRandomSuffix: true,
+          addRandomSuffix: false,
         };
-      },
-      onUploadCompleted: async ({ blob }) => {
-        console.log("[blob] upload completed", blob.pathname, blob.url);
       },
     });
     return NextResponse.json(json);
