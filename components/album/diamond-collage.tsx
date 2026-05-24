@@ -4,104 +4,87 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { Photo } from "@/lib/blob";
 
-const SWAP_INTERVAL_MS = 2800;
-const COS = Math.SQRT1_2; // cos/sin of 45°
-const ASPECT = 9 / 16; // container height / width (full-width landscape band)
-const GRID = 1.4; // grid square side, in container-width units (>1 so it overflows & clips)
+const SWAP_INTERVAL_MS = 2600;
+const SPEED = 60; // px / second the carousel drifts left
+const ROOT2 = Math.SQRT2;
+
+interface Dims {
+  bandH: number;
+  P: number; // diamond point-to-point size
+  unit: number; // lattice spacing = P / 2
+  cols: number; // even — columns in one (looping) segment
+  jLo: number;
+  jHi: number;
+}
 
 interface Tile {
-  x: number; // top-left, fraction of grid
-  y: number;
-  s: number; // size, fraction of grid
+  i: number;
+  j: number;
+  size: 1 | 2;
 }
 
-interface Breakpoint {
-  max: number; // target tile count
-  minS: number; // smallest allowed tile
-}
+const isEven = (i: number, j: number) => ((((i + j) % 2) + 2) % 2) === 0;
 
-function useBreakpoint(): Breakpoint {
-  const [bp, setBp] = useState<Breakpoint>({ max: 30, minS: 1 / 16 });
-  useEffect(() => {
-    const compute = () => {
-      const w = window.innerWidth;
-      if (w < 480) setBp({ max: 11, minS: 1 / 8 });
-      else if (w < 1024) setBp({ max: 18, minS: 1 / 8 });
-      else setBp({ max: 30, minS: 1 / 16 });
-    };
-    compute();
-    window.addEventListener("resize", compute);
-    return () => window.removeEventListener("resize", compute);
-  }, []);
-  return bp;
-}
-
-/** Screen-space offset of a grid point from the container center (width units). */
-function toScreen(gx: number, gy: number): [number, number] {
-  const dx = (gx - 0.5) * GRID;
-  const dy = (gy - 0.5) * GRID;
-  return [(dx - dy) * COS, (dx + dy) * COS]; // rotate 45°
-}
-
-/** Does the tile (after rotation) overlap the visible rectangle at all? */
-function visible(t: Tile): boolean {
-  const [ox, oy] = toScreen(t.x + t.s / 2, t.y + t.s / 2);
-  const margin = t.s * GRID * COS;
-  return Math.abs(ox) <= 0.5 + margin && Math.abs(oy) <= ASPECT / 2 + margin;
-}
-
-function pickByArea(tiles: Tile[]): Tile {
-  const weights = tiles.map((t) => t.s * t.s);
-  const total = weights.reduce((a, b) => a + b, 0);
-  let r = Math.random() * total;
-  for (let i = 0; i < tiles.length; i += 1) {
-    r -= weights[i];
-    if (r <= 0) return tiles[i];
+function computeDims(vw: number): Dims {
+  let bandH: number;
+  let P: number;
+  if (vw < 480) {
+    bandH = 196;
+    P = 158;
+  } else if (vw < 1024) {
+    bandH = 300;
+    P = 212;
+  } else {
+    bandH = 360;
+    P = 250;
   }
-  return tiles[tiles.length - 1];
+  const unit = P / 2;
+  const cols = Math.max(8, Math.ceil((vw * 1.5) / unit / 2) * 2); // keep even
+  const jLo = -1;
+  const jHi = Math.ceil((2 * bandH) / P);
+  return { bandH, P, unit, cols, jLo, jHi };
 }
 
 /**
- * Quadtree subdivision: start from one tile covering the grid and repeatedly
- * split a (larger, visible) tile into four until enough tiles fall inside the
- * visible rectangle. Splitting keeps everything edge-adjacent and gap-free, the
- * mixed depths give varied sizes, and rotation turns each square into a diamond.
+ * Build one horizontally-tileable segment of a diamond tessellation. Unit
+ * diamonds sit on every even lattice cell (full coverage); some 2×2 blocks are
+ * promoted to a single large diamond (centered on an odd vertex) for variety.
+ * 2× tiles never touch the segment's first/last column, so a second identical
+ * copy placed one segment-width to the right tessellates seamlessly at the seam.
  */
-function buildTiles(target: number, minS: number): Tile[] {
-  let tiles: Tile[] = [{ x: 0, y: 0, s: 1 }];
-  const visibleCount = () => tiles.reduce((n, t) => n + (visible(t) ? 1 : 0), 0);
+function buildTiles(cols: number, jLo: number, jHi: number): Tile[] {
+  const occ = new Set<string>();
+  const key = (i: number, j: number) => `${i},${j}`;
+  const inRange = (i: number, j: number) =>
+    i >= 0 && i < cols && j >= jLo && j <= jHi;
+  const tiles: Tile[] = [];
 
-  let guard = 0;
-  while (visibleCount() < target && guard < 600) {
-    guard += 1;
-    const splittable = tiles.filter((t) => t.s > minS + 1e-9);
-    if (splittable.length === 0) break;
-    const preferred = splittable.filter(visible);
-    const pick = pickByArea(preferred.length ? preferred : splittable);
-    const h = pick.s / 2;
-    tiles = tiles.filter((t) => t !== pick);
-    tiles.push(
-      { x: pick.x, y: pick.y, s: h },
-      { x: pick.x + h, y: pick.y, s: h },
-      { x: pick.x, y: pick.y + h, s: h },
-      { x: pick.x + h, y: pick.y + h, s: h }
-    );
+  // Large (2×) diamonds on odd vertices, away from the seam columns.
+  for (let j = jLo; j <= jHi; j += 1) {
+    for (let i = 2; i < cols - 2; i += 1) {
+      if (isEven(i, j)) continue; // need an odd vertex
+      if (Math.random() > 0.28) continue;
+      const cells: [number, number][] = [
+        [i + 1, j],
+        [i - 1, j],
+        [i, j + 1],
+        [i, j - 1],
+      ];
+      if (cells.every(([ci, cj]) => inRange(ci, cj) && !occ.has(key(ci, cj)))) {
+        cells.forEach(([ci, cj]) => occ.add(key(ci, cj)));
+        tiles.push({ i, j, size: 2 });
+      }
+    }
   }
 
-  // Keep only tiles touching the frame, then trim to the target, dropping the
-  // smallest / most peripheral first so edges stay pleasantly ragged.
-  let vis = tiles.filter(visible);
-  if (vis.length > target) {
-    vis = vis
-      .map((t) => {
-        const [ox, oy] = toScreen(t.x + t.s / 2, t.y + t.s / 2);
-        return { t, score: t.s - (Math.abs(ox) + Math.abs(oy)) * 0.18 };
-      })
-      .sort((a, b) => b.score - a.score)
-      .slice(0, target)
-      .map((e) => e.t);
+  // Fill every remaining even cell with a unit diamond.
+  for (let j = jLo; j <= jHi; j += 1) {
+    for (let i = 0; i < cols; i += 1) {
+      if (!isEven(i, j) || occ.has(key(i, j))) continue;
+      tiles.push({ i, j, size: 1 });
+    }
   }
-  return vis;
+  return tiles;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -116,7 +99,22 @@ function shuffle<T>(arr: T[]): T[] {
 export function DiamondCollage() {
   const [pool, setPool] = useState<Photo[]>([]);
   const [assign, setAssign] = useState<Photo[]>([]);
-  const bp = useBreakpoint();
+  const [vw, setVw] = useState(1280);
+
+  useEffect(() => {
+    const onResize = () => setVw(window.innerWidth);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const dims = useMemo(() => computeDims(vw), [vw]);
+  const tiles = useMemo(
+    () => buildTiles(dims.cols, dims.jLo, dims.jHi),
+    [dims.cols, dims.jLo, dims.jHi]
+  );
+  const segmentW = dims.cols * dims.unit;
+  const side1 = dims.P / ROOT2;
 
   // Fetch the photo pool once. Decorative: failures are silently ignored.
   useEffect(() => {
@@ -136,36 +134,30 @@ export function DiamondCollage() {
     };
   }, []);
 
-  // Layout: as many tiles as we have photos (no repeats), capped per breakpoint.
-  const target = Math.min(pool.length, bp.max);
-  const layout = useMemo(
-    () => (target > 0 ? buildTiles(target, bp.minS) : []),
-    [target, bp.minS]
-  );
-
-  // Assign one distinct photo per tile.
+  // One photo per tile; if there are more tiles than photos, cycle through a
+  // shuffled order (so neighbours differ). Both track copies read this array,
+  // keeping the two halves identical for a seamless loop.
   useEffect(() => {
-    if (pool.length === 0 || layout.length === 0) {
+    if (pool.length === 0 || tiles.length === 0) {
       setAssign([]);
       return;
     }
     const shuffled = shuffle(pool);
-    setAssign(layout.map((_, i) => shuffled[i]));
-  }, [pool, layout]);
+    setAssign(tiles.map((_, k) => shuffled[k % shuffled.length]));
+  }, [pool, tiles]);
 
-  // Cross-fade one random tile to a photo not currently shown, on an interval.
+  // Occasionally swap a tile to a different photo for freshness.
   const poolRef = useRef(pool);
   poolRef.current = pool;
   useEffect(() => {
     const id = setInterval(() => {
       setAssign((cur) => {
-        if (cur.length === 0) return cur;
-        const shown = new Set(cur.map((p) => p.url));
-        const fresh = poolRef.current.filter((p) => !shown.has(p.url));
-        if (fresh.length === 0) return cur;
+        if (cur.length === 0 || poolRef.current.length <= 1) return cur;
+        const k = Math.floor(Math.random() * cur.length);
+        const others = poolRef.current.filter((p) => p.url !== cur[k]?.url);
+        if (others.length === 0) return cur;
         const next = [...cur];
-        next[Math.floor(Math.random() * next.length)] =
-          fresh[Math.floor(Math.random() * fresh.length)];
+        next[k] = others[Math.floor(Math.random() * others.length)];
         return next;
       });
     }, SWAP_INTERVAL_MS);
@@ -175,11 +167,11 @@ export function DiamondCollage() {
   if (assign.length === 0) return null;
 
   return (
-    <section className="relative pb-24 pt-2 sm:pb-28">
-      {/* warm glow behind the mosaic */}
+    <section className="relative overflow-hidden pb-24 pt-2 sm:pb-28">
+      {/* warm glow behind the carousel */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[55vw] max-h-[26rem] w-[96vw] max-w-[64rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[55vw] max-h-[24rem] w-[96vw] max-w-[64rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
         style={{
           background:
             "radial-gradient(circle, rgba(192,57,43,0.18), rgba(176,133,52,0.12) 45%, transparent 70%)",
@@ -188,89 +180,68 @@ export function DiamondCollage() {
 
       <motion.div
         aria-hidden
-        className="relative aspect-[16/9] max-h-[34rem] w-full overflow-hidden"
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        className="relative w-full overflow-hidden"
+        style={{
+          height: dims.bandH,
+          maskImage:
+            "linear-gradient(to right, transparent, #000 7%, #000 93%, transparent)",
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent, #000 7%, #000 93%, transparent)",
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
       >
-        {/* Rotated grid, larger than the frame so its diamonds fill it edge to
-            edge; the frame's overflow-hidden clips boundary tiles into wedges. */}
         <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-45"
-          style={{ width: `${GRID * 100}%`, aspectRatio: "1" }}
+          className="collage-track absolute left-0 top-0 h-full"
+          style={{
+            width: segmentW * 2,
+            animation: `collage-marquee ${(segmentW / SPEED).toFixed(2)}s linear infinite`,
+          }}
         >
-          {layout.map((tile, i) => {
-            const photo = assign[i];
-            if (!photo) return null;
-            const [ox, oy] = toScreen(tile.x + tile.s / 2, tile.y + tile.s / 2);
-            return (
-              <DiamondTile
-                key={`${tile.x.toFixed(4)}-${tile.y.toFixed(4)}-${tile.s.toFixed(4)}`}
-                tile={tile}
-                photo={photo}
-                dist={Math.abs(ox) + Math.abs(oy)}
-              />
-            );
-          })}
+          {[0, 1].map((copy) =>
+            tiles.map((t, k) => {
+              const photo = assign[k];
+              if (!photo) return null;
+              const side = t.size === 2 ? side1 * 2 : side1;
+              const cx = t.i * dims.unit + copy * segmentW;
+              const cy = t.j * dims.unit;
+              return (
+                <div
+                  key={`${copy}-${k}`}
+                  className="absolute"
+                  style={{
+                    left: cx - side / 2,
+                    top: cy - side / 2,
+                    width: side,
+                    height: side,
+                    transform: "rotate(45deg)",
+                  }}
+                >
+                  <div className="group absolute inset-[3px] overflow-hidden bg-washi-2 shadow-[0_8px_22px_-12px_rgba(25,32,47,0.55)] ring-1 ring-washi/40">
+                    <AnimatePresence initial={false}>
+                      <motion.img
+                        key={photo.url}
+                        src={photo.url}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                        // Counter-rotate upright; scale >=1.42 (≈√2) covers the diamond.
+                        initial={{ opacity: 0, scale: 1.5, rotate: -45 }}
+                        animate={{ opacity: 1, scale: 1.42, rotate: -45 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    </AnimatePresence>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </motion.div>
     </section>
-  );
-}
-
-function DiamondTile({
-  tile,
-  photo,
-  dist,
-}: {
-  tile: Tile;
-  photo: Photo;
-  dist: number;
-}) {
-  return (
-    <motion.div
-      className="absolute"
-      style={{
-        left: `${tile.x * 100}%`,
-        top: `${tile.y * 100}%`,
-        width: `${tile.s * 100}%`,
-        height: `${tile.s * 100}%`,
-      }}
-      initial={{ opacity: 0, scale: 0.2 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{
-        delay: 0.08 + dist * 0.5,
-        type: "spring",
-        stiffness: 220,
-        damping: 22,
-      }}
-    >
-      {/* inset creates the padding between neighbouring diamonds */}
-      <motion.div
-        whileHover={{ scale: 1.07, zIndex: 20 }}
-        className="group absolute inset-[2.5px] overflow-hidden bg-washi-2 shadow-[0_8px_22px_-12px_rgba(25,32,47,0.55)] ring-1 ring-washi/50 sm:inset-[3.5px]"
-        style={{ zIndex: 1 }}
-      >
-        <AnimatePresence initial={false}>
-          <motion.img
-            key={photo.url}
-            src={photo.url}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            draggable={false}
-            // Counter-rotate upright; scale stays >=1.42 (≈√2) to cover the diamond.
-            initial={{ opacity: 0, scale: 1.5, rotate: -45 }}
-            animate={{ opacity: 1, scale: 1.42, rotate: -45 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        </AnimatePresence>
-        <span
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-ink/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        />
-      </motion.div>
-    </motion.div>
   );
 }

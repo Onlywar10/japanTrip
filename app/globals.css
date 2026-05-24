@@ -67,4 +67,23 @@
   .accent-bar {
     background: linear-gradient(90deg, var(--color-vermillion), var(--color-gold));
   }
+
+  .collage-track {
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .collage-track {
+      animation: none !important;
+    }
+  }
+}
+
+@keyframes collage-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
