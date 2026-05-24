@@ -6,8 +6,8 @@ import type { Photo } from "@/lib/blob";
 
 const SWAP_INTERVAL_MS = 2800;
 const COS = Math.SQRT1_2; // cos/sin of 45°
-const ASPECT = 6 / 5; // container height / width (portrait)
-const GRID = 1.62; // grid square side, in container-width units (>1 so it overflows & clips)
+const ASPECT = 9 / 16; // container height / width (full-width landscape band)
+const GRID = 1.4; // grid square side, in container-width units (>1 so it overflows & clips)
 
 interface Tile {
   x: number; // top-left, fraction of grid
@@ -175,11 +175,11 @@ export function DiamondCollage() {
   if (assign.length === 0) return null;
 
   return (
-    <section className="relative px-4 pb-24 pt-2 sm:pb-28">
+    <section className="relative pb-24 pt-2 sm:pb-28">
       {/* warm glow behind the mosaic */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[80vw] max-h-[34rem] w-[80vw] max-w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[55vw] max-h-[26rem] w-[96vw] max-w-[64rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
         style={{
           background:
             "radial-gradient(circle, rgba(192,57,43,0.18), rgba(176,133,52,0.12) 45%, transparent 70%)",
@@ -188,8 +188,7 @@ export function DiamondCollage() {
 
       <motion.div
         aria-hidden
-        className="relative mx-auto aspect-[5/6] overflow-hidden rounded-2xl"
-        style={{ width: "min(90vw, 26rem)" }}
+        className="relative aspect-[16/9] max-h-[34rem] w-full overflow-hidden"
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -248,7 +247,7 @@ function DiamondTile({
       {/* inset creates the padding between neighbouring diamonds */}
       <motion.div
         whileHover={{ scale: 1.07, zIndex: 20 }}
-        className="group absolute inset-[2.5px] overflow-hidden rounded-[12%] bg-washi-2 shadow-[0_8px_22px_-12px_rgba(25,32,47,0.55)] ring-1 ring-washi/50 sm:inset-[3.5px]"
+        className="group absolute inset-[2.5px] overflow-hidden bg-washi-2 shadow-[0_8px_22px_-12px_rgba(25,32,47,0.55)] ring-1 ring-washi/50 sm:inset-[3.5px]"
         style={{ zIndex: 1 }}
       >
         <AnimatePresence initial={false}>
