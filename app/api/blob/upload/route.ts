@@ -1,40 +1,33 @@
-import { NextResponse } from "next/server";
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { type HandleUploadBody, handleUpload } from "@vercel/blob/client";
+import type { NextRequest } from "next/server";
 import {
   ALLOWED_IMAGE_TYPES,
   MAX_UPLOAD_BYTES,
   PHOTO_PREFIX,
 } from "@/lib/blob";
 
-export async function POST(request: Request): Promise<NextResponse> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      { error: "Blob storage is not configured on the server." },
-      { status: 503 }
-    );
-  }
-
+export async function POST(request: NextRequest): Promise<Response> {
   const body = (await request.json()) as HandleUploadBody;
 
-  try {
-    const json = await handleUpload({
-      body,
-      request,
-      onBeforeGenerateToken: async (pathname) => {
-        if (!pathname.startsWith(PHOTO_PREFIX)) {
-          throw new Error(`Uploads must be inside ${PHOTO_PREFIX}`);
-        }
-        return {
-          allowedContentTypes: ALLOWED_IMAGE_TYPES,
-          maximumSizeInBytes: MAX_UPLOAD_BYTES,
-          addRandomSuffix: false,
-        };
-      },
-    });
-    return NextResponse.json(json);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Upload failed";
-    console.error("[blob] handleUpload error", err);
-    return NextResponse.json({ error: message }, { status: 400 });
-  }
+  const jsonResponse = await handleUpload({
+    body,
+    request,
+    onBeforeGenerateToken: async (pathname) => {
+      if (!pathname.startsWith(PHOTO_PREFIX)) {
+        throw new Error(`Uploads must be inside ${PHOTO_PREFIX}`);
+      }
+      return {
+        allowedContentTypes: ALLOWED_IMAGE_TYPES,
+        maximumSizeInBytes: MAX_UPLOAD_BYTES,
+        addRandomSuffix: true,
+      };
+    },
+    // No onUploadCompleted: we don't persist anything server-side (the gallery
+    // re-lists from Blob via listPhotos). Defining it would register a
+    // server-to-server callback URL that the Blob service must reach for the
+    // upload to "complete" — which stalls/retries on localhost (unreachable)
+    // and on protected preview deployments. See @vercel/blob client.js getCallbackUrl.
+  });
+
+  return Response.json(jsonResponse);
 }

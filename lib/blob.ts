@@ -38,7 +38,14 @@ export async function listPhotos(limit = 200): Promise<Photo[]> {
     return [];
   }
   try {
-    const { blobs } = await list({ prefix: PHOTO_PREFIX, limit });
+    const { blobs } = await list({
+      prefix: PHOTO_PREFIX,
+      limit,
+      // Force the read-write token. The SDK otherwise prefers OIDC whenever
+      // VERCEL_OIDC_TOKEN + BLOB_STORE_ID are present (auto-injected on Vercel),
+      // which throws when OIDC isn't enabled for the current environment.
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
     return blobs
       .map(toPhoto)
       .sort((a, b) => (a.uploadedAt < b.uploadedAt ? 1 : -1));

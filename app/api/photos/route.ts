@@ -30,7 +30,7 @@ export async function DELETE(request: Request) {
 
   const { del } = await import("@vercel/blob");
   try {
-    await del(url);
+    await del(url, { token: process.env.BLOB_READ_WRITE_TOKEN });
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[blob] delete failed", err);
