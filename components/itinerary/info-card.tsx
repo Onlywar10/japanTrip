@@ -1,6 +1,14 @@
 "use client";
 
-import { BedDouble, Map as MapIcon, MapPin, Phone, Plane } from "lucide-react";
+import Link from "next/link";
+import {
+  BedDouble,
+  Map as MapIcon,
+  MapPin,
+  Phone,
+  Plane,
+  Ticket,
+} from "lucide-react";
 import type { Day } from "@/lib/itinerary";
 import { UI } from "@/lib/itinerary";
 import { useLanguage } from "./language-provider";
@@ -51,15 +59,26 @@ export function InfoCard({ day }: Props) {
         </div>
       ) : null}
 
-      <a
-        href={gmap(h.maps)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="relative z-[1] mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/25 text-white px-4 py-2 text-[0.72rem] tracking-wide transition-colors hover:bg-vermillion hover:border-vermillion"
-      >
-        <MapIcon className="h-[14px] w-[14px]" strokeWidth={1.8} />
-        {t(UI.openmap)}
-      </a>
+      <div className="relative z-[1] mt-4 flex flex-wrap gap-2">
+        <a
+          href={gmap(h.maps)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/25 text-white px-4 py-2 text-[0.72rem] tracking-wide transition-colors hover:bg-vermillion hover:border-vermillion"
+        >
+          <MapIcon className="h-[14px] w-[14px]" strokeWidth={1.8} />
+          {t(UI.openmap)}
+        </a>
+        {h.reservationId ? (
+          <Link
+            href={`/reservations#${h.reservationId}`}
+            className="inline-flex items-center gap-1.5 rounded-full bg-vermillion text-white px-4 py-2 text-[0.72rem] tracking-wide font-medium transition-colors hover:bg-vermillion-deep"
+          >
+            <Ticket className="h-[14px] w-[14px]" strokeWidth={1.8} />
+            {t(UI.viewReservation)}
+          </Link>
+        ) : null}
+      </div>
     </div>
   );
 }

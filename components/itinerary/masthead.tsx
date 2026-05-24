@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { UI } from "@/lib/itinerary";
 import { useLanguage } from "./language-provider";
+import { PhotoCollage } from "@/components/album/photo-collage";
 
 export function Masthead() {
   const { t, lang } = useLanguage();
@@ -10,14 +11,15 @@ export function Masthead() {
 
   return (
     <header className="relative overflow-hidden bg-ink text-washi rounded-b-[26px] px-4 sm:px-8 lg:px-14 pt-24 pb-9">
+      <PhotoCollage />
       <span
         aria-hidden
-        className="absolute right-[-3%] top-1/2 -translate-y-1/2 font-serif font-black select-none pointer-events-none text-[clamp(11rem,26vw,24rem)] leading-[0.8] text-white/5 z-0"
+        className="absolute right-[-3%] top-1/2 -translate-y-1/2 font-serif font-black select-none pointer-events-none text-[clamp(11rem,26vw,24rem)] leading-[0.8] text-white/5 z-[1]"
       >
         九州
       </span>
 
-      <div className="relative z-[1] max-w-[1120px] mx-auto">
+      <div className="relative z-[2] max-w-[1120px] mx-auto">
         <motion.span
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

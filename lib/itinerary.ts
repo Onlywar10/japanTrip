@@ -32,6 +32,7 @@ export interface Stop {
   web?: string;
   tip?: LocaleText;
   highlights?: Highlight[];
+  reservationId?: string;
 }
 
 export interface Hotel {
@@ -41,6 +42,7 @@ export interface Hotel {
   tel?: string | null;
   maps: string;
   departure?: boolean;
+  reservationId?: string;
 }
 
 export interface Day {
@@ -87,6 +89,81 @@ export const UI = {
   dest: { en: "Final Destination", zh: "最終目的地" },
   openmap: { en: "Open in Google Maps", zh: "用 Google 地圖開啟" },
   foot: { en: "Kyūshū Six-Day Journey · Safe travels", zh: "九州六日之旅 · 一路平安" },
+  tabItinerary: { en: "Itinerary", zh: "行程" },
+  tabReservations: { en: "Reservations", zh: "預約" },
+  tabAlbum: { en: "Album", zh: "相簿" },
+  albumTitle: { en: "Trip Album", zh: "旅程相簿" },
+  albumSub: {
+    en: "A shared place for the family — upload your favourite shots and grab everyone else’s with one tap.",
+    zh: "家人共享的相簿 — 上傳精彩瞬間，也能一鍵下載所有人的照片。",
+  },
+  albumEmpty: {
+    en: "No photos yet. Be the first to upload!",
+    zh: "目前還沒有照片，快來上傳第一張！",
+  },
+  albumNotConfigured: {
+    en: "Photo storage isn’t set up yet. Add a Vercel Blob store and BLOB_READ_WRITE_TOKEN to enable uploads.",
+    zh: "照片儲存尚未設定。請在 Vercel 上新增 Blob 儲存空間並設定 BLOB_READ_WRITE_TOKEN。",
+  },
+  upload: { en: "Upload Photos", zh: "上傳照片" },
+  uploading: { en: "Uploading", zh: "上傳中" },
+  saveAll: { en: "Save All", zh: "全部儲存" },
+  saveSelected: { en: "Save Selected", zh: "儲存所選" },
+  select: { en: "Select", zh: "選取" },
+  selectAll: { en: "Select all", zh: "全選" },
+  clear: { en: "Clear", zh: "清除" },
+  cancel: { en: "Cancel", zh: "取消" },
+  done: { en: "Done", zh: "完成" },
+  selectedCount: { en: "selected", zh: "已選" },
+  photoCount: {
+    en: { one: "photo", many: "photos" },
+    zh: { one: "張", many: "張" },
+  },
+  preparingDownload: { en: "Preparing download…", zh: "準備下載中…" },
+  saved: { en: "Saved to your device", zh: "已儲存至裝置" },
+  sharedViaSheet: { en: "Opened in share sheet", zh: "已開啟分享" },
+  saveError: { en: "Could not save photos", zh: "儲存失敗" },
+  deletePhoto: { en: "Delete photo", zh: "刪除照片" },
+  confirmDelete: {
+    en: "Delete this photo? This can’t be undone.",
+    zh: "確定刪除這張照片？無法復原。",
+  },
+  closeViewer: { en: "Close", zh: "關閉" },
+  uploadHint: {
+    en: "JPEG, PNG, HEIC up to 25 MB each. iPhones auto-convert HEIC when you pick a photo.",
+    zh: "支援 JPEG、PNG、HEIC（每張最大 25 MB）。iPhone 透過瀏覽器選照片時會自動轉檔。",
+  },
+  viewReservation: { en: "View Reservation", zh: "查看預約" },
+  reservationsTitle: { en: "Reservations & Tickets", zh: "預約與票券" },
+  reservationsSub: {
+    en: "Hotel bookings, restaurant reservations, tours and tickets — kept in one place.",
+    zh: "飯店、餐廳、體驗與票券預約 — 一站式整理。",
+  },
+  reservationsEmpty: {
+    en: "No reservations yet. Add some details and I’ll wire them in.",
+    zh: "尚未新增預約。請提供細節後再加入。",
+  },
+  resType: {
+    hotel: { en: "Hotel", zh: "飯店" },
+    restaurant: { en: "Restaurant", zh: "餐廳" },
+    activity: { en: "Activity / Ticket", zh: "體驗 / 票券" },
+  },
+  resStatus: {
+    confirmed: { en: "Confirmed", zh: "已確認" },
+    pending: { en: "Pending", zh: "待確認" },
+    cancelled: { en: "Cancelled", zh: "已取消" },
+  },
+  confirmationNumber: { en: "Confirmation #", zh: "確認編號" },
+  vendor: { en: "Booked via", zh: "預訂平台" },
+  party: { en: "Party", zh: "人數" },
+  contact: { en: "Contact", zh: "聯絡" },
+  notes: { en: "Notes", zh: "備註" },
+  openBooking: { en: "Open booking", zh: "開啟預訂連結" },
+  jumpToItinerary: { en: "See on itinerary", zh: "回到行程中" },
+  placeholderBanner: {
+    en: "These cards are placeholders — replace with real confirmations once you’re ready.",
+    zh: "以下卡片為範例 — 收到正式確認後請替換為實際資料。",
+  },
 } as const;
 
 export const PILL = {
@@ -161,6 +238,7 @@ export const DAYS: Day[] = [
         type: "food",
         pill: PILL.reserved,
         gold: true,
+        reservationId: "res-dinner-toriden",
         desc: {
           en: "Michelin Bib Gourmand mizutaki specialist — a milky, collagen-rich chicken hot pot made with Kyushu free-range chicken.",
           zh: "米其林必比登推薦的水炊き名店 — 以九州土雞熬出乳白濃郁的雞湯火鍋。",
@@ -232,6 +310,7 @@ export const DAYS: Day[] = [
       addr: "〒810-0004 Watanabe-dori 1-1-2, Chuo-ku, Fukuoka",
       tel: "092-715-2000",
       maps: "Hotel New Otani Hakata",
+      reservationId: "res-hotel-otani",
     },
   },
   {
@@ -252,6 +331,7 @@ export const DAYS: Day[] = [
         type: "nature",
         pill: PILL.reserved,
         gold: true,
+        reservationId: "res-cruise-yanagawa",
         desc: {
           en: "A ~70-minute “donko-bune” punt down the willow-lined moats of the old castle town; boatmen pole and sing along the 4 km route.",
           zh: "搭乘「どんこ舟」沿柳樹環繞的護城河慢遊約70分鐘，船夫一面撐篙一面唱民謠，全程約4公里。",

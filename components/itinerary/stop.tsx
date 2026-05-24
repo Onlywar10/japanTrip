@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ChevronDown,
@@ -9,6 +10,7 @@ import {
   Map as MapIcon,
   MapPin,
   Star,
+  Ticket,
 } from "lucide-react";
 import type { Stop as StopT } from "@/lib/itinerary";
 import { UI } from "@/lib/itinerary";
@@ -159,7 +161,7 @@ export function Stop({ stop, isLast }: Props) {
                 </div>
               ) : null}
 
-              {(stop.maps || stop.web) && (
+              {(stop.maps || stop.web || stop.reservationId) && (
                 <div className="flex flex-wrap gap-2.5 mt-3">
                   {stop.maps ? (
                     <a
@@ -185,6 +187,15 @@ export function Stop({ stop, isLast }: Props) {
                       />
                       {t(UI.site)}
                     </a>
+                  ) : null}
+                  {stop.reservationId ? (
+                    <Link
+                      href={`/reservations#${stop.reservationId}`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-vermillion text-washi px-3.5 py-2 text-[0.74rem] tracking-wide font-medium transition-colors hover:bg-vermillion-deep"
+                    >
+                      <Ticket className="h-[14px] w-[14px]" strokeWidth={1.8} />
+                      {t(UI.viewReservation)}
+                    </Link>
                   ) : null}
                 </div>
               )}

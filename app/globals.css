@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 
 @theme inline {
+  --breakpoint-xs: 26rem;
+
   --color-washi: #f3ede0;
   --color-washi-2: #ebe2d0;
   --color-card: #faf6ec;
