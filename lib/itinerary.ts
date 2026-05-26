@@ -153,13 +153,20 @@ export const UI = {
     pending: { en: "Pending", zh: "待確認" },
     cancelled: { en: "Cancelled", zh: "已取消" },
   },
-  confirmationNumber: { en: "Confirmation #", zh: "確認編號" },
+  confirmationNumber: { en: "Order no.", zh: "訂單編號" },
+  phone: { en: "Phone", zh: "電話" },
+  address: { en: "Address", zh: "地址" },
+  rooms: { en: "Rooms", zh: "房型" },
+  meals: { en: "Meals", zh: "餐食" },
+  plan: { en: "Plan", zh: "方案" },
   vendor: { en: "Booked via", zh: "預訂平台" },
   party: { en: "Party", zh: "人數" },
   contact: { en: "Contact", zh: "聯絡" },
   notes: { en: "Notes", zh: "備註" },
   openBooking: { en: "Open booking", zh: "開啟預訂連結" },
   jumpToItinerary: { en: "See on itinerary", zh: "回到行程中" },
+  downloadReservations: { en: "Download PDF", zh: "下載 PDF" },
+  pdfGenerated: { en: "Generated", zh: "產生時間" },
   placeholderBanner: {
     en: "These cards are placeholders — replace with real confirmations once you’re ready.",
     zh: "以下卡片為範例 — 收到正式確認後請替換為實際資料。",
@@ -331,7 +338,6 @@ export const DAYS: Day[] = [
         type: "nature",
         pill: PILL.reserved,
         gold: true,
-        reservationId: "res-cruise-yanagawa",
         desc: {
           en: "A ~70-minute “donko-bune” punt down the willow-lined moats of the old castle town; boatmen pole and sing along the 4 km route.",
           zh: "搭乘「どんこ舟」沿柳樹環繞的護城河慢遊約70分鐘，船夫一面撐篙一面唱民謠，全程約4公里。",
@@ -422,6 +428,7 @@ export const DAYS: Day[] = [
       addr: "〒860-0803 Shinshigai 8-7, TERRACE87 (Reception 12F), Chuo-ku, Kumamoto",
       tel: "096-327-8480",
       maps: "Candeo Hotels Kumamoto Shinshigai",
+      reservationId: "res-hotel-candeo",
     },
   },
   {
@@ -524,6 +531,7 @@ export const DAYS: Day[] = [
       addr: "〒869-1602 Takamori 3219, Takamori-machi, Aso-gun, Kumamoto",
       tel: "0967-62-2111",
       maps: "Kyukamura Minami Aso",
+      reservationId: "res-hotel-kyukamura",
     },
   },
   {
@@ -646,6 +654,7 @@ export const DAYS: Day[] = [
       addr: "〒879-5101 Tsukahara, Kurokasagi 135-37, Yufuin-cho, Yufu City, Oita",
       tel: "0977-85-3484",
       maps: "Sansou Shikian Yufuin",
+      reservationId: "res-hotel-shikian",
     },
   },
   {
@@ -784,6 +793,7 @@ export const DAYS: Day[] = [
       addr: "〒810-0004 Watanabe-dori 4-8-25, Chuo-ku, Fukuoka",
       tel: "092-739-2055",
       maps: "Richmond Hotel Fukuoka Tenjin",
+      reservationId: "res-hotel-richmond",
     },
   },
   {

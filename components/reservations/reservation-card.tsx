@@ -8,7 +8,6 @@ import {
   ExternalLink,
   Hash,
   Info,
-  Mail,
   Map as MapIcon,
   MapPin,
   Phone,
@@ -63,7 +62,7 @@ export function ReservationCard({ reservation: r, index }: Props) {
               <TypeIcon className="h-5 w-5 text-ink-soft" strokeWidth={1.6} />
             </div>
             <div>
-              <div className="flex items-center gap-2 text-[0.62rem] tracking-[0.24em] uppercase text-ink-faint font-semibold">
+              <div className="text-[0.62rem] tracking-[0.24em] uppercase text-ink-faint font-semibold">
                 {t(UI.resType[r.type])}
               </div>
               <h3 className="font-serif text-[1.25rem] sm:text-[1.4rem] font-semibold leading-tight">
@@ -86,14 +85,54 @@ export function ReservationCard({ reservation: r, index }: Props) {
           </span>
         </div>
 
-        <dl className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-6 text-[0.86rem]">
-          <Row icon={CalendarDays} label={t(r.dateLabel)} sub={r.timeLabel ? t(r.timeLabel) : undefined} />
+        <dl className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-[0.86rem]">
+          <Row
+            icon={CalendarDays}
+            label={t(r.dateLabel)}
+            sub={r.timeLabel ? t(r.timeLabel) : undefined}
+          />
           {r.party ? <Row icon={Users} label={t(r.party)} /> : null}
-          {r.confirmationNumber ? (
-            <Row icon={Hash} label={r.confirmationNumber} caption={t(UI.confirmationNumber)} mono />
+
+          {r.rooms && r.rooms.length > 0 ? (
+            <div className="flex gap-2.5 items-start sm:col-span-2">
+              <BedDouble className="h-[15px] w-[15px] mt-[3px] shrink-0 text-gold" strokeWidth={1.7} />
+              <span>
+                <span className="block text-[0.66rem] tracking-[0.18em] uppercase text-ink-faint">
+                  {t(UI.rooms)}
+                </span>
+                <ul className="mt-0.5 space-y-0.5">
+                  {r.rooms.map((room, i) => (
+                    <li key={i}>
+                      <span className="font-semibold tabular-nums">{room.count}×</span>{" "}
+                      {t(room.desc)}
+                    </li>
+                  ))}
+                </ul>
+              </span>
+            </div>
           ) : null}
-          {r.vendor ? <Row icon={Sparkles} label={t(r.vendor)} caption={t(UI.vendor)} /> : null}
-          {r.address ? <Row icon={MapPin} label={r.address} /> : null}
+
+          {r.meal ? <Row icon={UtensilsCrossed} label={t(r.meal)} caption={t(UI.meals)} /> : null}
+          {r.plan ? <Row icon={Sparkles} label={t(r.plan)} caption={t(UI.plan)} /> : null}
+
+          {r.confirmationNumbers && r.confirmationNumbers.length > 0 ? (
+            <div className="flex gap-2.5 items-start">
+              <Hash className="h-[15px] w-[15px] mt-[3px] shrink-0 text-gold" strokeWidth={1.7} />
+              <span>
+                <span className="block text-[0.66rem] tracking-[0.18em] uppercase text-ink-faint">
+                  {t(UI.confirmationNumber)}
+                </span>
+                <span className="block font-mono tracking-tight space-y-0.5">
+                  {r.confirmationNumbers.map((n) => (
+                    <span key={n} className="block">
+                      {n}
+                    </span>
+                  ))}
+                </span>
+              </span>
+            </div>
+          ) : null}
+
           {r.phone ? (
             <Row
               icon={Phone}
@@ -101,7 +140,7 @@ export function ReservationCard({ reservation: r, index }: Props) {
               href={`tel:${r.phone.replace(/[^+\d]/g, "")}`}
             />
           ) : null}
-          {r.email ? <Row icon={Mail} label={r.email} href={`mailto:${r.email}`} /> : null}
+          {r.address ? <Row icon={MapPin} label={r.address} className="sm:col-span-2" /> : null}
         </dl>
 
         {r.notes ? (
@@ -156,10 +195,10 @@ interface RowProps {
   caption?: string;
   sub?: string;
   href?: string;
-  mono?: boolean;
+  className?: string;
 }
 
-function Row({ icon: Icon, label, caption, sub, href, mono }: RowProps) {
+function Row({ icon: Icon, label, caption, sub, href, className }: RowProps) {
   const body = (
     <>
       <Icon className="h-[15px] w-[15px] mt-[3px] shrink-0 text-gold" strokeWidth={1.7} />
@@ -169,7 +208,7 @@ function Row({ icon: Icon, label, caption, sub, href, mono }: RowProps) {
             {caption}
           </span>
         ) : null}
-        <span className={cn("block", mono ? "font-mono tracking-tight" : "")}>{label}</span>
+        <span className="block">{label}</span>
         {sub ? <span className="block text-[0.78rem] text-ink-soft">{sub}</span> : null}
       </span>
     </>
@@ -177,12 +216,15 @@ function Row({ icon: Icon, label, caption, sub, href, mono }: RowProps) {
 
   if (href) {
     return (
-      <a className="flex gap-2.5 items-start hover:text-vermillion transition-colors" href={href}>
+      <a
+        className={cn("flex gap-2.5 items-start hover:text-vermillion transition-colors", className)}
+        href={href}
+      >
         {body}
       </a>
     );
   }
-  return <div className="flex gap-2.5 items-start">{body}</div>;
+  return <div className={cn("flex gap-2.5 items-start", className)}>{body}</div>;
 }
 
 function ArrowIcon() {

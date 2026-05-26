@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Info } from "lucide-react";
 import { RESERVATIONS } from "@/lib/reservations";
 import { UI } from "@/lib/itinerary";
 import { useLanguage } from "@/components/itinerary/language-provider";
 import { ReservationCard } from "./reservation-card";
+import { DownloadReservationsButton } from "./download-reservations-button";
 
 export function ReservationsView() {
   const { t } = useLanguage();
@@ -47,16 +47,22 @@ export function ReservationsView() {
           >
             {t(UI.reservationsSub)}
           </motion.p>
+
+          {RESERVATIONS.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-6"
+            >
+              <DownloadReservationsButton />
+            </motion.div>
+          ) : null}
         </div>
       </header>
 
       <section className="px-4 sm:px-8 lg:px-14 pb-20 pt-8">
         <div className="max-w-[1120px] mx-auto">
-          <div className="mb-6 flex gap-2.5 items-start rounded-[12px] bg-vermillion/[0.07] border-l-[3px] border-vermillion py-3 px-4 text-[0.85rem] text-vermillion-deep">
-            <Info className="h-[17px] w-[17px] mt-0.5 shrink-0 text-vermillion" strokeWidth={1.7} />
-            <span>{t(UI.placeholderBanner)}</span>
-          </div>
-
           {RESERVATIONS.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-line bg-card/60 p-10 text-center text-ink-soft">
               {t(UI.reservationsEmpty)}
