@@ -171,6 +171,41 @@ export const UI = {
     en: "These cards are placeholders — replace with real confirmations once you’re ready.",
     zh: "以下卡片為範例 — 收到正式確認後請替換為實際資料。",
   },
+
+  // Budget
+  tabBudget: { en: "Budget", zh: "預算" },
+  budgetTitle: { en: "Family Budget", zh: "家庭預算" },
+  budgetSub: {
+    en: "Our shared trip pot — log who put money in and what we spend along the way.",
+    zh: "家庭共用旅費 — 記錄誰存入、一路上花了什麼。",
+  },
+  balanceLeft: { en: "Balance left", zh: "剩餘金額" },
+  totalIn: { en: "Added", zh: "存入" },
+  totalOut: { en: "Spent", zh: "支出" },
+  addTransaction: { en: "Add", zh: "新增" },
+  newTransaction: { en: "New entry", zh: "新增一筆" },
+  editTransaction: { en: "Edit entry", zh: "編輯" },
+  kindIncome: { en: "Money in", zh: "存入" },
+  kindExpense: { en: "Spending", zh: "支出" },
+  fieldAmount: { en: "Amount", zh: "金額" },
+  fieldDescription: { en: "Description", zh: "說明" },
+  fieldCategory: { en: "Category", zh: "分類" },
+  fieldMember: { en: "Who", zh: "成員" },
+  fieldDate: { en: "Date", zh: "日期" },
+  optional: { en: "optional", zh: "選填" },
+  save: { en: "Save", zh: "儲存" },
+  saving: { en: "Saving…", zh: "儲存中…" },
+  delete: { en: "Delete", zh: "刪除" },
+  confirmDeleteTx: {
+    en: "Delete this entry? This can’t be undone.",
+    zh: "確定刪除這筆紀錄？無法復原。",
+  },
+  budgetEmpty: {
+    en: "No entries yet. Tap “Add” to log the first one.",
+    zh: "尚無紀錄。點「新增」記下第一筆。",
+  },
+  descriptionRequired: { en: "Add a short description", zh: "請輸入說明" },
+  amountRequired: { en: "Enter an amount above 0", zh: "請輸入大於 0 的金額" },
 } as const;
 
 export const PILL = {

@@ -22,6 +22,7 @@ export function Topbar() {
   const tabs: { href: string; label: string }[] = [
     { href: "/", label: t(UI.tabItinerary) },
     { href: "/reservations", label: t(UI.tabReservations) },
+    { href: "/budget", label: t(UI.tabBudget) },
     { href: "/album", label: t(UI.tabAlbum) },
   ];
 
