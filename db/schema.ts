@@ -56,3 +56,53 @@ export const transactions = pgTable(
 
 export type Transaction = typeof transactions.$inferSelect;
 export type NewTransaction = typeof transactions.$inferInsert;
+
+/**
+ * Individual accounts — each family member's own pocket money, tracked
+ * separately from the shared family pot above. Same shape as `transactions`,
+ * but every row belongs to one `member`.
+ */
+export const members = pgTable("members", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const memberTransactions = pgTable(
+  "member_transactions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+
+    // Owning member — deleting a member removes their entries too.
+    memberId: uuid("member_id")
+      .notNull()
+      .references(() => members.id, { onDelete: "cascade" }),
+
+    kind: transactionKind("kind").notNull(),
+    amount: integer("amount").notNull(),
+    description: text("description").notNull(),
+    category: text("category"),
+
+    occurredAt: timestamp("occurred_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => sql`now()`),
+  },
+  (table) => [
+    index("member_transactions_member_id_idx").on(table.memberId),
+    index("member_transactions_occurred_at_idx").on(table.occurredAt),
+  ],
+);
+
+export type Member = typeof members.$inferSelect;
+export type NewMember = typeof members.$inferInsert;
+export type MemberTransaction = typeof memberTransactions.$inferSelect;
+export type NewMemberTransaction = typeof memberTransactions.$inferInsert;

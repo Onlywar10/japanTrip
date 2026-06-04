@@ -19,6 +19,35 @@ export type BudgetSummary = {
   totalOut: number;
 };
 
+/** A family member with their own individual account. */
+export type MemberAccount = {
+  id: string;
+  name: string;
+};
+
+/** An individual-account entry (owned by a member, so no free-text "who"). */
+export type AccountTransaction = {
+  id: string;
+  kind: TransactionKind;
+  amount: number;
+  description: string;
+  category: string | null;
+  occurredAt: string; // ISO date string
+};
+
+/** Derive running totals from any list of income/expense entries. */
+export function summarize(
+  items: { kind: TransactionKind; amount: number }[],
+): BudgetSummary {
+  let totalIn = 0;
+  let totalOut = 0;
+  for (const t of items) {
+    if (t.kind === "income") totalIn += t.amount;
+    else totalOut += t.amount;
+  }
+  return { totalIn, totalOut, balance: totalIn - totalOut };
+}
+
 const yen = new Intl.NumberFormat("ja-JP", {
   style: "currency",
   currency: "JPY",

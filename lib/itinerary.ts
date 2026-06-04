@@ -207,6 +207,29 @@ export const UI = {
   },
   descriptionRequired: { en: "Add a short description", zh: "請輸入說明" },
   amountRequired: { en: "Enter an amount above 0", zh: "請輸入大於 0 的金額" },
+
+  // Individual accounts
+  tabMembers: { en: "Personal", zh: "個人" },
+  membersTitle: { en: "Personal Accounts", zh: "個人帳戶" },
+  membersSub: {
+    en: "Each traveller’s own pocket money — tracked separately from the family pot.",
+    zh: "每位旅人的個人零用金 — 與家庭旅費分開記帳。",
+  },
+  addPerson: { en: "Add person", zh: "新增成員" },
+  newPerson: { en: "New person", zh: "新增成員" },
+  editPerson: { en: "Edit person", zh: "編輯成員" },
+  personName: { en: "Name", zh: "姓名" },
+  nameRequired: { en: "Enter a name", zh: "請輸入姓名" },
+  renamePerson: { en: "Rename", zh: "改名" },
+  deletePerson: { en: "Remove person", zh: "移除成員" },
+  confirmDeletePerson: {
+    en: "Remove this person and all their entries? This can’t be undone.",
+    zh: "移除此成員及其所有紀錄？無法復原。",
+  },
+  noMembers: {
+    en: "No one added yet. Add a family member to start their account.",
+    zh: "尚未新增成員。新增家庭成員即可開始記帳。",
+  },
 } as const;
 
 export const PILL = {

@@ -2,7 +2,9 @@ import { desc } from "drizzle-orm";
 
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
-import type { BudgetSummary, BudgetTransaction } from "./budget-format";
+import type { BudgetTransaction } from "./budget-format";
+
+export { summarize } from "./budget-format";
 
 /** All transactions, newest first. Runs on the server only. */
 export async function getTransactions(): Promise<BudgetTransaction[]> {
@@ -20,15 +22,4 @@ export async function getTransactions(): Promise<BudgetTransaction[]> {
     member: r.member,
     occurredAt: r.occurredAt.toISOString(),
   }));
-}
-
-/** Derive the running totals from a list of transactions (no extra query). */
-export function summarize(items: BudgetTransaction[]): BudgetSummary {
-  let totalIn = 0;
-  let totalOut = 0;
-  for (const t of items) {
-    if (t.kind === "income") totalIn += t.amount;
-    else totalOut += t.amount;
-  }
-  return { totalIn, totalOut, balance: totalIn - totalOut };
 }
