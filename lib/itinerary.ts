@@ -20,6 +20,7 @@ export interface Highlight {
 
 export interface Stop {
   time?: string;
+  endTime?: string;
   title: LocaleText;
   jp?: string;
   type: StopType;
@@ -223,7 +224,7 @@ export const DAYS: Day[] = [
     city: { en: "Fukuoka", zh: "福岡" },
     title: { en: "Touchdown in Fukuoka", zh: "抵達福岡" },
     start: "11:20",
-    car: { en: "Until 20:00", zh: "至20:00" },
+    car: { en: "Until 21:10", zh: "至21:10" },
     kanji: "福",
     note: {
       en: "Today may run over schedule — keep an eye on time at each stop so the 17:00 dinner reservation stays on track.",
@@ -232,6 +233,7 @@ export const DAYS: Day[] = [
     stops: [
       {
         time: "11:20",
+        endTime: "12:30",
         title: { en: "Arrive Fukuoka Airport, Terminal 1", zh: "抵達福岡機場 第1航廈" },
         type: "plane",
         simple: true,
@@ -242,6 +244,8 @@ export const DAYS: Day[] = [
         simple: true,
       },
       {
+        time: "13:10",
+        endTime: "15:00",
         title: { en: "Dazaifu Tenmangu Shrine", zh: "太宰府天滿宮" },
         jp: "太宰府天満宮",
         type: "shrine",
@@ -259,6 +263,8 @@ export const DAYS: Day[] = [
         },
       },
       {
+        time: "15:50",
+        endTime: "16:35",
         title: { en: "Kushida Shrine", zh: "櫛田神社" },
         jp: "櫛田神社",
         type: "shrine",
@@ -275,6 +281,7 @@ export const DAYS: Day[] = [
       },
       {
         time: "17:00",
+        endTime: "19:00",
         title: { en: "Dinner — Hakata Mizutaki Toriden", zh: "晚餐 — 博多水炊き とり田" },
         jp: "博多水炊き とり田 (Hakata Main Store)",
         type: "food",
@@ -295,6 +302,8 @@ export const DAYS: Day[] = [
         },
       },
       {
+        time: "19:00",
+        endTime: "21:00",
         title: { en: "Canal City Hakata", zh: "博多運河城" },
         jp: "キャナルシティ博多",
         type: "shopping",
@@ -341,6 +350,8 @@ export const DAYS: Day[] = [
         ],
       },
       {
+        time: "21:00",
+        endTime: "21:10",
         title: { en: "Overnight in Fukuoka", zh: "入住福岡" },
         type: "hotel",
         simple: true,
@@ -365,9 +376,16 @@ export const DAYS: Day[] = [
     car: { en: "10 hours", zh: "10小時" },
     kanji: "熊",
     stops: [
-      { title: { en: "Depart Fukuoka", zh: "福岡出發" }, type: "car", simple: true },
       {
-        time: "10:00",
+        time: "8:30",
+        endTime: "9:30",
+        title: { en: "Depart Fukuoka", zh: "福岡出發" },
+        type: "car",
+        simple: true,
+      },
+      {
+        time: "9:30",
+        endTime: "10:45",
         title: { en: "Yanagawa River Cruise", zh: "柳川遊船" },
         jp: "柳川 川下り",
         type: "nature",
@@ -385,8 +403,16 @@ export const DAYS: Day[] = [
           zh: "6月初是菖蒲花季。午餐可嚐柳川名物「鰻魚蒸籠飯」（うなぎせいろ蒸し）。",
         },
       },
-      { title: { en: "Lunch in Yanagawa", zh: "柳川午餐" }, type: "food", simple: true },
       {
+        time: "10:45",
+        endTime: "13:00",
+        title: { en: "Lunch in Yanagawa", zh: "柳川午餐" },
+        type: "food",
+        simple: true,
+      },
+      {
+        time: "14:30",
+        endTime: "16:00",
         title: { en: "Kumamoto Castle (Castle Keep)", zh: "熊本城（天守閣）" },
         jp: "熊本城 天守閣",
         type: "sight",
@@ -403,6 +429,8 @@ export const DAYS: Day[] = [
         },
       },
       {
+        time: "16:05",
+        endTime: "17:30",
         title: { en: "Sakuranobaba Johsaien", zh: "櫻之馬場 城彩苑" },
         jp: "桜の馬場 城彩苑",
         type: "shopping",
@@ -440,6 +468,7 @@ export const DAYS: Day[] = [
         ],
       },
       {
+        time: "17:40",
         title: { en: "Dinner — Katsuretsutei", zh: "晚餐 — 勝烈亭（新市街本店）" },
         jp: "勝烈亭 新市街本店",
         type: "food",
@@ -476,8 +505,16 @@ export const DAYS: Day[] = [
     car: { en: "10 hours", zh: "10小時" },
     kanji: "高",
     stops: [
-      { title: { en: "Depart Kumamoto", zh: "熊本出發" }, type: "car", simple: true },
       {
+        time: "8:00",
+        endTime: "10:00",
+        title: { en: "Depart Kumamoto", zh: "熊本出發" },
+        type: "car",
+        simple: true,
+      },
+      {
+        time: "10:00",
+        endTime: "10:30",
         title: {
           en: "Takachiho Amaterasu Railway",
           zh: "高千穗天照鐵道（觀光小火車）",
@@ -497,8 +534,16 @@ export const DAYS: Day[] = [
           zh: "單程約30分鐘，每日約10班，約¥1,500；隧道內燈光點綴，並有泡泡相送。",
         },
       },
-      { title: { en: "Lunch near Takachiho", zh: "高千穗附近午餐" }, type: "food", simple: true },
       {
+        time: "10:35",
+        endTime: "12:00",
+        title: { en: "Lunch near Takachiho", zh: "高千穗附近午餐" },
+        type: "food",
+        simple: true,
+      },
+      {
+        time: "12:35",
+        endTime: "13:35",
         title: { en: "Takachiho Shrine", zh: "高千穗神社" },
         jp: "高千穂神社",
         type: "shrine",
@@ -515,6 +560,8 @@ export const DAYS: Day[] = [
         },
       },
       {
+        time: "13:40",
+        endTime: "14:00",
         title: { en: "Takachiho Gorge — Manai Falls", zh: "高千穗峽 — 真名井瀑布" },
         jp: "高千穂峡 真名井の滝",
         type: "nature",
@@ -531,6 +578,8 @@ export const DAYS: Day[] = [
         },
       },
       {
+        time: "14:20",
+        endTime: "16:20",
         title: { en: "Amano Iwato Shrine & Amano Yasugawara", zh: "天岩戶神社 & 天安河原" },
         jp: "天岩戸神社 & 天安河原",
         type: "shrine",
@@ -546,13 +595,20 @@ export const DAYS: Day[] = [
           zh: "神官每約30分鐘帶領免費參觀岩戶（洞內禁止攝影）。",
         },
       },
-      { title: { en: "Drive on to Aso", zh: "前往阿蘇" }, type: "car", simple: true },
+      {
+        time: "16:20",
+        endTime: "18:00",
+        title: { en: "Drive on to Aso", zh: "前往阿蘇" },
+        type: "car",
+        simple: true,
+      },
       {
         title: { en: "Grocery stop — central Takamori", zh: "高森町中心採買" },
         type: "shopping",
         simple: true,
       },
       {
+        time: "18:00",
         title: { en: "Overnight at Aso Onsen", zh: "入住阿蘇溫泉" },
         type: "hotel",
         pill: PILL.by18,
@@ -579,8 +635,16 @@ export const DAYS: Day[] = [
     car: { en: "10 hours", zh: "10小時" },
     kanji: "湯",
     stops: [
-      { title: { en: "Depart Aso Onsen", zh: "阿蘇溫泉出發" }, type: "car", simple: true },
       {
+        time: "8:30",
+        endTime: "9:00",
+        title: { en: "Depart Aso Onsen", zh: "阿蘇溫泉出發" },
+        type: "car",
+        simple: true,
+      },
+      {
+        time: "9:00",
+        endTime: "10:00",
         title: { en: "Kamishikimi Kumano-imasu Shrine", zh: "上色見熊野座神社" },
         jp: "上色見熊野座神社",
         type: "shrine",
@@ -597,6 +661,8 @@ export const DAYS: Day[] = [
         },
       },
       {
+        time: "10:35",
+        endTime: "12:00",
         title: { en: "Kusasenri Plateau", zh: "草千里之濱" },
         jp: "草千里ヶ浜",
         type: "nature",
@@ -614,6 +680,8 @@ export const DAYS: Day[] = [
         },
       },
       {
+        time: "12:15",
+        endTime: "13:00",
         title: { en: "Aso Volcano Crater (Nakadake)", zh: "阿蘇火山口（中岳）" },
         jp: "阿蘇山 中岳火口",
         type: "nature",
@@ -630,6 +698,8 @@ export const DAYS: Day[] = [
         },
       },
       {
+        time: "13:40",
+        endTime: "14:40",
         title: { en: "Aso Shrine & Monzen-machi", zh: "阿蘇神社 & 門前町" },
         jp: "阿蘇神社 / 門前町",
         type: "shrine",
@@ -669,13 +739,20 @@ export const DAYS: Day[] = [
           },
         ],
       },
-      { title: { en: "Drive on to Yufuin", zh: "前往湯布院" }, type: "car", simple: true },
+      {
+        time: "14:40",
+        endTime: "17:30",
+        title: { en: "Drive on to Yufuin", zh: "前往湯布院" },
+        type: "car",
+        simple: true,
+      },
       {
         title: { en: "Convenience-store stop near Yufuin Station", zh: "湯布院車站附近超商" },
         type: "shopping",
         simple: true,
       },
       {
+        time: "17:30",
         title: { en: "Overnight in Yufuin", zh: "入住湯布院" },
         type: "hotel",
         pill: PILL.by18,
@@ -698,12 +775,14 @@ export const DAYS: Day[] = [
     dow: { en: "Sat", zh: "週六" },
     city: { en: "Beppu → Fukuoka", zh: "別府 → 福岡" },
     title: { en: "Hot Springs & the Hells", zh: "溫泉與地獄巡禮" },
-    start: "8:30",
+    start: "9:00",
     car: { en: "10 hours", zh: "10小時" },
     kanji: "別",
     stops: [
       { title: { en: "Depart Yufuin", zh: "湯布院出發" }, type: "car", simple: true },
       {
+        time: "9:00",
+        endTime: "11:30",
         title: {
           en: "Yunotsubo Street — Floral Village & Snoopy Chaya",
           zh: "湯之坪街道 — 花卉村 & Snoopy茶屋",
@@ -749,21 +828,25 @@ export const DAYS: Day[] = [
         ],
       },
       {
-        title: { en: "Lunch — Jigoku Mushi Kobo Kannawa", zh: "午餐 — 地獄蒸工房 鐵輪" },
-        jp: "地獄蒸し工房 鉄輪",
+        time: "12:00",
+        endTime: "14:00",
+        title: { en: "Lunch — Jigoku Kanko Lab ENMAN", zh: "午餐 — 地獄観光ラボ ENMAN" },
+        jp: "地獄観光ラボ ENMAN",
         type: "food",
         desc: {
-          en: "A communal “hell-steaming” kitchen where you cook your own basket of seafood, meat and vegetables over 98°C natural onsen steam.",
-          zh: "公共「地獄蒸」廚房，可自行用98°C天然溫泉蒸氣蒸煮海鮮、肉類與蔬菜。",
+          en: "A modern hot-spring-town complex in Beppu’s Kannawa district gathering local restaurants and souvenir shops — a short hop from the “hells”, so lunch flows straight into the Jigoku Meguri tour.",
+          zh: "別府鐵輪溫泉區的新型複合設施，匯集在地餐廳與伴手禮店 — 距地獄群僅數分鐘，午餐後可無縫接上地獄巡禮。",
         },
-        address: "Furomoto 5-kumi, Kannawa, Beppu, Oita 874-0044",
-        maps: "Jigoku Mushi Kobo Kannawa",
+        address: "Kannawa, Beppu, Oita",
+        maps: "Jigoku Kanko Lab Enman Beppu",
         tip: {
-          en: "Open 10:00–19:00 (last entry 18:00). Weekends can mean 2–3 hr waits; hell-steamed eggs and pudding are the favourites.",
-          zh: "營業10:00–19:00（最後入場18:00）。週末常需排隊2–3小時；溫泉蒸蛋與布丁最受歡迎。",
+          en: "Right by the Kannawa hells — an easy, convenient lunch stop (~2 hrs) before the tour.",
+          zh: "緊鄰鐵輪地獄群，是巡禮前方便的午餐點（停留約2小時）。",
         },
       },
       {
+        time: "14:00",
+        endTime: "16:00",
         title: { en: "Beppu “Hells” Tour (Jigoku Meguri)", zh: "別府地獄巡禮" },
         jp: "別府地獄めぐり",
         type: "nature",
@@ -779,8 +862,15 @@ export const DAYS: Day[] = [
           zh: "一張通票（約¥2,000）可遊全部七處地獄；其中五處集中在鐵輪、步行可達（全程約2–3小時）。",
         },
       },
-      { title: { en: "Drive on to Fukuoka", zh: "前往福岡" }, type: "car", simple: true },
       {
+        time: "16:00",
+        endTime: "18:00",
+        title: { en: "Drive on to Fukuoka", zh: "前往福岡" },
+        type: "car",
+        simple: true,
+      },
+      {
+        time: "18:00",
         title: { en: "Tenjin Shopping Arcade", zh: "天神商店街購物" },
         jp: "天神商店街",
         type: "shopping",
@@ -841,8 +931,16 @@ export const DAYS: Day[] = [
     car: { en: "10 hours", zh: "10小時" },
     kanji: "空",
     stops: [
-      { title: { en: "Depart Fukuoka", zh: "福岡出發" }, type: "car", simple: true },
       {
+        time: "8:15",
+        endTime: "9:00",
+        title: { en: "Depart Fukuoka", zh: "福岡出發" },
+        type: "car",
+        simple: true,
+      },
+      {
+        time: "9:00",
+        endTime: "11:30",
         title: { en: "Marine World Uminonakamichi", zh: "海洋世界 海之中道" },
         jp: "マリンワールド海の中道",
         type: "sight",
@@ -859,6 +957,8 @@ export const DAYS: Day[] = [
         },
       },
       {
+        time: "12:00",
+        endTime: "16:30",
         title: { en: "LaLaport Fukuoka", zh: "LaLaport 福岡" },
         jp: "ららぽーと福岡",
         type: "shopping",
@@ -904,6 +1004,7 @@ export const DAYS: Day[] = [
       },
       {
         time: "16:30",
+        endTime: "16:45",
         title: { en: "Head to Fukuoka Airport", zh: "前往福岡機場" },
         type: "car",
         simple: true,

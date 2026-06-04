@@ -43,6 +43,9 @@ export function Stop({ stop, isLast }: Props) {
           {stop.time ? (
             <span className="font-serif text-[0.8rem] text-vermillion font-semibold tracking-[0.04em]">
               {stop.time}
+              {stop.endTime ? (
+                <span className="text-vermillion/55">{` – ${stop.endTime}`}</span>
+              ) : null}
             </span>
           ) : null}
           <span className="text-[0.92rem] text-ink-soft">
@@ -94,6 +97,9 @@ export function Stop({ stop, isLast }: Props) {
           {stop.time ? (
             <div className="font-serif text-[0.8rem] text-vermillion font-semibold tracking-[0.04em]">
               {stop.time}
+              {stop.endTime ? (
+                <span className="text-vermillion/55">{` – ${stop.endTime}`}</span>
+              ) : null}
             </div>
           ) : null}
           <div className="text-[1.02rem] font-semibold leading-[1.3]">
